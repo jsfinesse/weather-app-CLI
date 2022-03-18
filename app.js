@@ -3,12 +3,26 @@ const request = require("postman-request");
 const geocode = require("./utils/geocode");
 const forecast = require("./utils/forecast");
 
-geocode("mumbai", (error, data) => {
-    console.log("Error", error);
-    console.log("Data", data);
-});
+const location = process.argv[2];
 
-forecast(18.9666, 72.8333, (error, data) => {
-    console.log("Error", error);
-    console.log("Data", data);
-})
+if (!location) {
+    console.log("Please provide a search location");
+} else {
+    geocode(location, (error, geocodeData) => {
+        if (error) {
+            return console.log(error);
+        }
+
+        forecast(
+            geocodeData.latitude,
+            geocodeData.longitude,
+            (error, forecastData) => {
+                if (error) {
+                    return console.log(error);
+                }
+                console.log(geocodeData.location);
+                console.log(forecastData);
+            }
+        );
+    });
+}
